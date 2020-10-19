@@ -50,10 +50,7 @@ def optimal_block(ndata, stat):
         if B3 > 2*ndata*(err/err_first)**4 :
             opt = (block_size, err)
             
-    if (opt == None):
+    if (opt[0] > (ndata/50)):
         print( "You may not be converging. Sample more." )
-    else:
-        if opt[0] < (ndata/50):
-            return opt
-        else:
-            print( "You may not be converging. Sample more." )
+    
+    return opt

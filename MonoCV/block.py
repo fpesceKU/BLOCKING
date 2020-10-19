@@ -47,7 +47,7 @@ def optimal_block(ndata, stat):
     
     for (block_size, err, err_err) in reversed(stat):
         B3 =  block_size**3
-        if B3 > 2*ndata*(err/err_first)**4 :
+        if B3 > ndata*(err/err_first)**4 :
             opt = (block_size, err)
             
     if (opt[0] > (ndata/50)):

@@ -43,14 +43,14 @@ def blocking(array, power2=False):
 
 def optimal_block(ndata, stat):
     err_first = stat[0,1]
-    opt = None
+    opt = (np.nan,np.nan)
     
     for (block_size, err, err_err) in reversed(stat):
         B3 =  block_size**3
         if B3 > ndata*(err/err_first)**4 :
             opt = (block_size, err)
             
-    if (opt[0] > (ndata/50)):
-        print( "You may not be converging. Sample more." )
+    #if (opt[0] > (ndata/50)):
+    #    print( "You may not be converging. Sample more." )
     
     return opt

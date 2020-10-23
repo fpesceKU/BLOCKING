@@ -21,24 +21,25 @@ def blocker(array, multi=1):
 
 def check(cv, bias, multi):
     nt = len( blocker(cv, multi=multi)[1] )
-    if nt > 10:
+    if nt > 19:
         print ("Possible blocks transformation: "+str(nt)+"\n no lenght correction needed\n")
+        return cv, bias
     else:
         replen = int(len(cv) / multi)
-        for c in range(1,11):
+        for c in range(1,102):
             print ("Removing "+str(c)+" at the bottom of each replica")
             chunks_cv = np.array([])
             chunks_b = np.array([])
             for n in range(1,multi+1):
                 e = replen*n
                 s = e - replen
-                np.concatenate((cv[s:e-c],chunks_cv))
-                np.concatenate((bias[s:e-c],chunks_b))
-            nt = len( blocker(chuncks, multi=multi)[1] )
+                chunks_cv = np.concatenate((cv[s:e-c],chunks_cv))
+                chunks_b = np.concatenate((bias[s:e-c],chunks_b))
+            nt = len( blocker(chunks_cv, multi=multi)[1] )
             print ("Possible blocks transformation: "+str(nt)+"\n")
-            if nt > 14:
+            if nt > 19:
                 break
-    return chunks_cv, chunks_bias
+        return chunks_cv, chunks_b
 
 
 def fblocking(cv, bias, temp, multi=1):

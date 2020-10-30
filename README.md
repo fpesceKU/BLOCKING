@@ -9,5 +9,5 @@ Tools for assessing convergence of Molecular Dynamics simulations by error analy
 [https://doi.org/10.1103/PhysRevE.83.066706]
 
 ### *Requirements:
-NumPY (https://numpy.org)
-kneed (https://pypi.org/project/kneed/)
+NumPY [https://numpy.org]
+kneed [https://pypi.org/project/kneed/]

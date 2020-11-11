@@ -14,7 +14,7 @@ def blocker(array, multi=1):
     
     for n in n_blocks_try:
         if dimension % n == 0:
-            n_blocks.append(int(n*2))
+            n_blocks.append(int(n*multi))
             block_sizes.append(dimension/n)
     
     return dimension*multi, np.array(n_blocks), block_sizes

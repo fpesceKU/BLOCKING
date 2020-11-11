@@ -4,13 +4,13 @@ from kneed import KneeLocator
 def blocker(array, multi=1):
     
     dimension = len(array)/multi
-    n_blocks_try = np.arange(2,dimension+1)
+    n_blocks_try = np.arange(multi,dimension+1)
     if multi == 1:
         n_blocks = []
         block_sizes = []
     else:
         n_blocks = [multi]
-        block_sizes = [dimension*2/multi]
+        block_sizes = [dimension]
     
     for n in n_blocks_try:
         if dimension % n == 0:
@@ -66,7 +66,7 @@ def blocking(array, multi=1):
     return np.flip( np.array([block_sizes, errs, errs_errs]).T , axis=0  )
 
 
-def optimal_block(ndata, stat, method, S=2.0):
+def optimal_block(ndata, stat, method, S=2.):
     
     if method == "b3":
         

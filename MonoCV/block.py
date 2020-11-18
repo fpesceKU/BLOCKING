@@ -35,7 +35,7 @@ def check(array, multi=1):
                 s = e - replen
                 chunks_array = np.concatenate((array[s:e-c],chunks_array))
             nt = len( blocker(chunks_array, multi=multi)[1] )
-            print ("Possible blocks transformation: "+str(nt)+"\n")
+            print ("Possible blocks transformations: "+str(nt)+"\n")
             if nt > 19:
                 break
         return chunks_array

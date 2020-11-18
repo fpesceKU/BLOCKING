@@ -23,7 +23,7 @@ def blocker(array, multi=1):
 def check(cv, bias, multi):
     nt = len( blocker(cv, multi=multi)[1] )
     if nt > 19:
-        print ("Possible blocks transformation: "+str(nt)+"\n no lenght correction needed\n")
+        print ("Possible blocks transformations: "+str(nt)+"\n no lenght correction needed\n")
         return cv, bias
     else:
         replen = int(len(cv) / multi)
@@ -37,7 +37,7 @@ def check(cv, bias, multi):
                 chunks_cv = np.concatenate((cv[s:e-c],chunks_cv))
                 chunks_b = np.concatenate((bias[s:e-c],chunks_b))
             nt = len( blocker(chunks_cv, multi=multi)[1] )
-            print ("Possible blocks transformation: "+str(nt)+"\n")
+            print ("Possible blocks transformations: "+str(nt)+"\n")
             if nt > 19:
                 break
         return chunks_cv, chunks_b
@@ -49,46 +49,30 @@ def fblocking(cv, bias, temp, multi=1):
     kbt = kb*temp
     w = np.exp(norm_bias/kbt)
     w = w / w.sum()
-    W = w.sum()
-    S = (w**2).sum()
-    
-    bins = np.histogram(cv,bins=50,weights=w)[1]
+
     N, n_blocks, block_sizes = blocker(cv, multi=2)
+    u, bins = np.histogram(cv,weights=w,bins=50)
+    u = u/N
     
-    errs = []
-    errs_errs = []
-    for b in range(len(block_sizes)): 
-        blocks_h = []
-        wis = []
+    err = np.zeros(len(block_sizes))
+    err_err = np.zeros(len(block_sizes))
+    for b in range(len(block_sizes)):
         Nb = n_blocks[b]
-        div = Nb * (W-(S/W))
-        for n in range(1,Nb+1):
-            end = int( block_sizes[b] * n )
-            start = int( end - block_sizes[b] )
-            hi = np.histogram(cv[start:end],bins=bins,weights=w[start:end])[0]
-            wi = w[start:end].sum()
-            blocks_h.append( hi )
-            wis.append(wi)
-        blocks_h = np.array(blocks_h)
-        wis = np.array(wis)
-        u = np.zeros(len(bins)-1) ####
-        for i in range(len(bins)-1):
-            u[i] = ( (wi*blocks_h[...,i]).sum() ) / W
-        
-        e = np.zeros(len(bins)-1)
-        for i in range(len(bins)-1):
-            e[i] += (wi*(blocks_h[...,i]-u[i])**2).sum()
-        e = np.sqrt(e/div)
-        e = kbt * (e / u)
-        errs.append(e)
-        
-    err_av = np.nanmean(errs, axis = 1)
-    err_err = err_av/np.sqrt(2*((np.array(n_blocks)-1)))
+        his = np.zeros(len(bins)-1)
+        for n in range(Nb):
+            start = int( n*block_sizes[b] )
+            end = int( start + block_sizes[b] )
+            hi = np.histogram(cv[start:end], weights=w[start:end], bins=bins)[0] / len(cv[start:end])
+            his += (hi-u)**2
+        e = np.sqrt( his / (Nb*(Nb-1)) )
+        e = kbt*e/u
+        err[b] += e.mean()
+        err_err[b] += err[b] / np.sqrt( 2*(Nb-1) )
     
-    return np.flip( np.array([block_sizes, err_av, err_err]).T , axis=0  )
+    return np.flip( np.array([block_sizes, err, err_err]).T , axis=0  )
 
 
-def optimal_block(ndata, stat, method, S=2.7):
+def optimal_block(ndata, stat, method, S=4.):
     
     if method == "b3":
         

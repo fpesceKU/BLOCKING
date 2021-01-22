@@ -69,18 +69,14 @@ def blocking(array, multi=1):
 def optimal_block(ndata, stat, method, S=2.):
     
     if method == "b3":
-        
         err_first = stat[0,1]
         opt = (np.nan,np.nan)
-
         for (block_size, err, err_err) in reversed(stat):
             B3 =  block_size**3
             if B3 > ndata*(err/err_first)**4 :
                 opt = (block_size, err)
-
         if (opt[0] > (ndata/50)):
             print( "You may not be converging. Sample more." )
-
         return opt[0], opt[1]
     
     
@@ -88,5 +84,12 @@ def optimal_block(ndata, stat, method, S=2.):
         kneedle = KneeLocator(stat[...,0], stat[...,1], S=S, curve="concave", direction="increasing")
         bs = kneedle.knee
         err = kneedle.knee_y
-    
         return bs, err
+
+    if method == "hline":
+        c = np.zeros(len(stat))
+        for i,b in enumerate(stat[...,1]):
+            for p in stat:
+                if (b <= p[1]+p[2]) and (b >= p[1]-p[2]):
+                    c[i] += 1
+        return stat[...,0][np.argmax(c)], stat[...,1][np.argmax(c)]

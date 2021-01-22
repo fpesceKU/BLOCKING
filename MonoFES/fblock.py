@@ -96,3 +96,11 @@ def optimal_block(ndata, stat, method, S=4.):
         err = kneedle.knee_y
     
         return bs, err
+
+    if method == "hline":
+        c = np.zeros(len(stat))
+        for i,b in enumerate(stat[...,1]):
+            for p in stat:
+                if (b <= p[1]+p[2]) and (b >= p[1]-p[2]):
+                    c[i] += 1
+        return stat[...,0][np.argmax(c)], stat[...,1][np.argmax(c)]

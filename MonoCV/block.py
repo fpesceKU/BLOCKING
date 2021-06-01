@@ -1,9 +1,8 @@
 import numpy as np
-from kneed import KneeLocator
+
 
 def blocker(array, multi=1):
-    
-    dimension = len(array)/multi
+   dimension = len(array)/multi
     n_blocks_try = np.arange(multi,dimension+1)
     if multi == 1:
         n_blocks = []
@@ -66,25 +65,7 @@ def blocking(array, multi=1):
     return np.flip( np.array([block_sizes, errs, errs_errs]).T , axis=0  )
 
 
-def optimal_block(ndata, stat, method, S=2.):
-    
-    if method == "b3":
-        err_first = stat[0,1]
-        opt = (np.nan,np.nan)
-        for (block_size, err, err_err) in reversed(stat):
-            B3 =  block_size**3
-            if B3 > ndata*(err/err_first)**4 :
-                opt = (block_size, err)
-        if (opt[0] > (ndata/50)):
-            print( "You may not be converging. Sample more." )
-        return opt[0], opt[1]
-    
-    
-    if method == "knee_loc":
-        kneedle = KneeLocator(stat[...,0], stat[...,1], S=S, curve="concave", direction="increasing")
-        bs = kneedle.knee
-        err = kneedle.knee_y
-        return bs, err
+def optimal_block(stat, method="hline"):
 
     if method == "hline":
         c = np.zeros(len(stat))

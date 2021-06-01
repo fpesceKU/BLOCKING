@@ -2,7 +2,7 @@ import numpy as np
 
 
 def blocker(array, multi=1):
-   dimension = len(array)/multi
+    dimension = len(array)/multi
     n_blocks_try = np.arange(multi,dimension+1)
     if multi == 1:
         n_blocks = []

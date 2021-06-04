@@ -50,7 +50,7 @@ def fblocking(cv, bias, temp, multi=1):
     w = np.exp(norm_bias/kbt)
     w = w / w.sum()
 
-    N, n_blocks, block_sizes = blocker(cv, multi=2)
+    N, n_blocks, block_sizes = blocker(cv, multi)
     u, bins = np.histogram(cv,weights=w,bins=50)
     u = u/N
     

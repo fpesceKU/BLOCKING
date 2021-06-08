@@ -2,22 +2,19 @@ import numpy as np
 from kneed import KneeLocator
 
 def blocker(array, multi=1):
-    
-    dimension = len(array)/multi
-    n_blocks_try = np.arange(multi,dimension+1)
-    if multi == 1:
-        n_blocks = []
-        block_sizes = []
-    else:
-        n_blocks = [multi]
-        block_sizes = [dimension]
-    
+    dimension = len(array)
+    rep = dimension/multi
+    n_blocks_try = np.arange(20,dimension+1)
+    n_blocks = []
+    block_sizes = []
+
     for n in n_blocks_try:
-        if dimension % n == 0:
-            n_blocks.append(int(n*multi))
-            block_sizes.append(dimension/n)
-    
-    return dimension*multi, np.array(n_blocks), block_sizes
+        bs = dimension/n
+        if (dimension % n == 0) & (rep % bs == 0):
+            n_blocks.append(int(n))
+            block_sizes.append(bs)
+
+    return dimension, np.array(n_blocks), block_sizes
 
 
 def check(cv, bias, multi):

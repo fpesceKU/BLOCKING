@@ -1,5 +1,4 @@
 import numpy as np
-from kneed import KneeLocator
 
 def blocker(array, multi=1):
     dimension = len(array)

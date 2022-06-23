@@ -2,6 +2,7 @@ import numpy as np
 from scipy.optimize import minimize
 from block_tools import *
 from scipy.stats import gaussian_kde
+from scipy.stats import norm
 
 class BlockAnalysis:
 
@@ -9,6 +10,7 @@ class BlockAnalysis:
         self.multi = multi
         self.x = check(x, self.multi)
         self.w = weights
+        self.interval = interval
         if (self.w is None) and (bias is not None):
             bias -= np.max(bias)
             self.kbT = 0.008314463*T
@@ -20,7 +22,7 @@ class BlockAnalysis:
             self.av = self.x.mean()
         else:
             self.w /= self.w.sum()
-            self.stat = fblocking(self.x, self.w, self.kbT, self.multi)
+            self.stat = fblocking(self.x, self.w, self.kbT, self.multi, self.interval)
 
         self.stat[...,0] /= dt
 
@@ -30,7 +32,8 @@ class BlockAnalysis:
                 c=0
                 for i,p in enumerate(stat):
                     if (x <= p[1]+p[2]) and (x >= p[1]-p[2]):
-                        c += (np.sqrt(2*np.pi)*p[2]) * np.exp(-0.5*((x-p[1])/p[2])**2)
+                        c += 1
+                        #c += norm(p[1],p[2]).pdf(x)
                 return -c
 
         c = np.zeros(len(self.stat))
@@ -39,14 +42,13 @@ class BlockAnalysis:
             upper_bound = b[1]+b[2]
             bnds = [(lower_bound, upper_bound)]
             c[i] -= minimize( fun=find_n_intersect, x0=b[1], args=self.stat[self.stat[...,0] > b[0]], bounds=bnds ).fun
-        #return self.stat[...,0][np.argmax(c)], self.stat[...,1][np.argmax(c)]
        	self.bs = self.stat[...,0][np.argmax(c)]
         self.sem = self.stat[...,1][np.argmax(c)]
  
     def get_pdf(self):
 
-        min_ = self.x.min() - 0.05*self.x.min()
-        max_ = self.x.max() + 0.05*self.x.max()
+        min_ = self.x.min()
+        max_ = self.x.max()
         x = np.linspace( min_, max_, num = 100 )
         u = gaussian_kde( self.x, bw_method = "silverman", weights = self.w ).evaluate(x)
 
@@ -74,3 +76,10 @@ class BlockAnalysis:
         F = -self.kbT * np.log(H)
         FE = self.kbT * E / H
         return x, F, FE
+
+    def get_av_err(self):
+        x, H, E = self.get_pdf()
+        H /= H.sum()
+        av = np.average(x, weights=H)
+        err = np.sqrt((H**2*E**2).sum())
+        return av, err

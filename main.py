@@ -19,7 +19,7 @@ class BlockAnalysis:
             bias -= np.max(bias)
             self.kbT = 0.008314463*T
             self.w = np.exp(bias/(self.kbT))
-            self.w = check(x, self.multi)
+            self.w = check(self.w, self.multi)
 
         if self.w is None:
             self.stat = blocking(self.x, self.multi)

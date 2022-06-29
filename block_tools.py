@@ -63,7 +63,7 @@ def blocking(array, multi=1):
 def fblocking(cv, w, kbt, multi=1, interval=None):
 
     N, n_blocks, block_sizes = blocker(cv, multi=multi)
-    u, bins = np.histogram(cv,weights=w,bins=50)
+    u, bins = np.histogram(cv,weights=w,bins=50,range=(interval[0],interval[1]))
     u = u/N
     
     err = np.zeros(len(block_sizes))

@@ -6,11 +6,15 @@ from scipy.stats import norm
 
 class BlockAnalysis:
 
-    def __init__(self, x, multi=1, weights=None, bias=None, T=None, interval=None, dt=1):
+    def __init__(self, x, multi=1, weights=None, bias=None, T=None, interval_low=None, interval_up=None, dt=1):
         self.multi = multi
         self.x = check(x, self.multi)
         self.w = weights
-        self.interval = interval
+        
+        self.interval = []
+        self.interval.append(self.x.min() if interval_low is None else interval_low)
+        self.interval.append(self.x.max() if interval_up is None else interval_up)      
+
         if (self.w is None) and (bias is not None):
             bias -= np.max(bias)
             self.kbT = 0.008314463*T
@@ -47,8 +51,8 @@ class BlockAnalysis:
  
     def get_pdf(self):
 
-        min_ = self.x.min()
-        max_ = self.x.max()
+        min_ = self.interval[0]
+        max_ = self.interval[1]
         x = np.linspace( min_, max_, num = 100 )
         u = gaussian_kde( self.x, bw_method = "silverman", weights = self.w ).evaluate(x)
 

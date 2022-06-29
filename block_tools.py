@@ -82,3 +82,11 @@ def fblocking(cv, w, kbt, multi=1, interval=None):
         err_err[b] += err[b] / np.sqrt( 2*(Nb-1) )
     
     return np.flip( np.array([block_sizes, err, err_err]).T , axis=0  )
+
+def autocorrelation(x):
+    n = len(x)
+    variance = x.var()
+    x = x-x.mean()
+    r = np.correlate(x, x, mode = 'full')[-n:]
+    result = r/(variance*(np.arange(n, 0, -1)))
+    return result

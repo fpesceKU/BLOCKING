@@ -11,9 +11,11 @@ class BlockAnalysis:
         self.x = check(x, self.multi)
         self.w = weights
         
-        self.interval = []
-        self.interval.append(self.x.min() if interval_low is None else interval_low)
-        self.interval.append(self.x.max() if interval_up is None else interval_up)      
+        self.interval = [self.x.min(), self.x.max()]
+        if (interval_low is not None) and (self.x.min() < interval_low):
+            self.interval[0] = interval_low
+        if (interval_up is not None) and (self.x.max() > interval_up):
+            self.interval[1] = interval_up
 
         if (self.w is None) and (bias is not None):
             bias -= np.max(bias)
@@ -48,6 +50,9 @@ class BlockAnalysis:
             c[i] -= minimize( fun=find_n_intersect, x0=b[1], args=self.stat[self.stat[...,0] > b[0]], bounds=bnds ).fun
        	self.bs = self.stat[...,0][np.argmax(c)]
         self.sem = self.stat[...,1][np.argmax(c)]
+
+        if self.bs > self.stat[-1,0]/3:
+            print('WARNING: fixed point of the error may have not been reached!')
  
     def get_pdf(self):
 
@@ -75,11 +80,15 @@ class BlockAnalysis:
     
         return x, u, e
 
-    def get_fes(self):
+    def get_fes(self, maxkj=25):
         x, H, E = self.get_pdf()
         F = -self.kbT * np.log(H)
         FE = self.kbT * E / H
-        return x, F, FE
+
+        F -= F.min()
+        maxkj_ndx = np.where(F<maxkj)
+
+        return x[maxkj_ndx], F[maxkj_ndx], FE[maxkj_ndx]
 
     def get_av_err(self):
         x, H, E = self.get_pdf()

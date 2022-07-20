@@ -28,7 +28,7 @@ def check(array, multi=1):
             for n in range(1,multi+1):
                 e = replen*n
                 s = e - replen
-                chunks_array = np.concatenate((array[s:e-c],chunks_array))
+                chunks_array = np.concatenate((chunks_array,array[s:e-c]))
             nt = len( blocker(chunks_array, multi=multi)[1] )
             #print ("Possible blocks transformations: "+str(nt)+"\n")
             if nt > 19:

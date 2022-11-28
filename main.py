@@ -54,12 +54,16 @@ class BlockAnalysis:
         if self.bs > self.stat[-1,0]/3:
             print('WARNING: fixed point of the error may have not been reached!')
  
-    def get_pdf(self):
+    def get_pdf(self, cv=None):
 
         min_ = self.interval[0]
         max_ = self.interval[1]
         x = np.linspace( min_, max_, num = 100 )
-        u = gaussian_kde( self.x, bw_method = "silverman", weights = self.w ).evaluate(x)
+        if cv is not None:
+            cv = check(cv, self.multi)
+            u = gaussian_kde( cv, bw_method = "silverman", weights = self.w ).evaluate(x)
+        else:
+            u = gaussian_kde( self.x, bw_method = "silverman", weights = self.w ).evaluate(x)
 
         N = int(len(self.x))
         Nb = int(N / self.bs)
@@ -80,8 +84,11 @@ class BlockAnalysis:
     
         return x, u, e
 
-    def get_fes(self, maxkj=25):
-        x, H, E = self.get_pdf()
+    def get_fes(self, maxkj=25, cv=None):
+        if cv is not None:
+            x, H, E = self.get_pdf(cv)
+        else:
+            x, H, E = self.get_pdf()
         F = -self.kbT * np.log(H)
         FE = self.kbT * E / H
 
@@ -90,8 +97,11 @@ class BlockAnalysis:
 
         return x[maxkj_ndx], F[maxkj_ndx], FE[maxkj_ndx]
 
-    def get_av_err(self):
-        x, H, E = self.get_pdf()
+    def get_av_err(self, cv=None):
+        if cv is not None:
+            x, H, E = self.get_pdf(cv)
+        else:
+            x, H, E = self.get_pdf()
         H /= H.sum()
         av = np.average(x, weights=H)
         err = np.sqrt((H**2*E**2).sum())

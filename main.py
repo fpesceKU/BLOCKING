@@ -103,6 +103,7 @@ class BlockAnalysis:
         else:
             x, H, E = self.get_pdf()
         H /= H.sum()
+        E /= H.sum()
         av = np.average(x, weights=H)
         err = np.sqrt((H**2*E**2).sum())
         return av, err

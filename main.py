@@ -105,5 +105,5 @@ class BlockAnalysis:
         H /= H.sum()
         E /= H.sum()
         av = np.average(x, weights=H)
-        err = np.sqrt((H**2*E**2).sum())
+        err = np.sqrt((x**2*E**2).sum())
         return av, err

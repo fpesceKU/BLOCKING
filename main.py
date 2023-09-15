@@ -27,6 +27,7 @@ class BlockAnalysis:
             self.stat = blocking(self.x, self.multi)
             self.av = self.x.mean()
         else:
+            self.kbT = 0.008314463*T
             self.w /= self.w.sum()
             self.stat = fblocking(self.x, self.w, self.kbT, self.multi, self.interval)
 

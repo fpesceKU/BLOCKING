@@ -64,6 +64,9 @@ def fblocking(cv, w, kbt, multi=1, interval=None):
 
     N, n_blocks, block_sizes = blocker(cv, multi=multi)
     u, bins = np.histogram(cv,weights=w,bins=50,range=(interval[0],interval[1]))
+    zero_ndx = np.where(u==0)    
+    u = np.delete(u, zero_ndx)
+    bins = np.delete(bins, zero_ndx)
     u = u/N
     
     err = np.zeros(len(block_sizes))

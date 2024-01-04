@@ -26,6 +26,7 @@ class BlockAnalysis:
         if self.w is None:
             self.stat = blocking(self.x, self.multi)
             self.av = self.x.mean()
+            self.w = np.full(len(self.x), 1)
         else:
             self.kbT = 0.008314463*T
             self.w /= self.w.sum()
